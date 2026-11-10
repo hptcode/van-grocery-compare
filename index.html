@@ -21,7 +21,7 @@ header .sub{font-size:12px;opacity:.85;margin-top:2px}
   .wrap{padding:8px 10px}
   main{flex-direction:column !important;gap:10px !important}
   #left{width:100% !important;min-width:0 !important}
-  #items{max-height:38vh}
+  #items{max-height:34vh}
   th,td{padding:7px 8px;font-size:13px}
   td.price{font-size:15px}
   table .note{font-size:11px}
@@ -53,14 +53,13 @@ tr.best td.price{color:#b3121f}
 footer{padding:10px 20px;font-size:12px;color:#888}
 </style></head><body>
 <header><h1>🛒 Vancouver Grocery Price Comparison</h1>
-<div class="sub">Flyer week Nov 05 – Nov 12, 2026 · 8 stores · prices converted to per-unit where multi-buy · weekend specials (New Empire 新帝國, Supermarket 2000 超市2000) Nov 05–Nov 08</div></header>
+<div class="sub">Flyer week Nov 05 – Nov 12, 2026 · 8 stores · weekend specials (New Empire 新帝國, Supermarket 2000 超市2000) Nov 05–Nov 08</div></header>
 <div class="controls">
   <span id="storeWrap" style="position:relative;display:inline-block">
     <button id="storeBtn" type="button">Stores 商店: 全部</button>
     <div id="storePanel" hidden></div>
   </span>
-  <label for="catSel">Category 品類:</label>
-  <select id="catSel"></select>
+  <select id="catSel" aria-label="Category 品類"></select>
   <input id="search" placeholder="Search item… 搜索貨品 (English or 中文)">
 </div>
 <div class="wrap">
@@ -116,7 +115,9 @@ function pick(d){
   resultEl.innerHTML='<table><tr><th>Store 商店</th><th>Price 價格</th></tr>'+rows+'</table>'+
    '<div class="note" style="margin-top:8px">Showing: <b>'+d.name+'</b>'+dzh+
    (bestStoreName!=null?' · best price at '+bestStoreName+' ('+bestGroup+')':'')+
-   '. Items matched by name — check units before comparing /lb vs each.</div>';
+   '. Items matched by name — check units before comparing /lb vs each. Prices converted to per-unit where multi-buy.</div>';
+  // Mobile: bring the price table into view so users see the prices, not just the title bar
+  if(window.matchMedia('(max-width:760px)').matches) resultEl.scrollIntoView({behavior:'smooth',block:'start'});
 }
 function renderItems(){
   const q=searchEl.value.trim().toLowerCase();
