@@ -52,10 +52,12 @@ tr.best td.price{color:#b3121f}
 #empty{padding:40px;text-align:center;color:#999}
 footer{padding:10px 20px;font-size:12px;color:#888}
 </style></head><body>
-<header><h1>🛒 Vancouver Grocery Price Comparison</h1>
-<div class="sub">Flyer week Nov 12 – Nov 19, 2026 · 18 stores · Weekend specials (Big Crazy 柏仁超市, New Empire 新帝國, 超市2000) Nov 13–Nov 19</div></header>
+<header style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+  <div><h1>🛒 Vancouver Grocery Price Comparison</h1>
+  <div class="sub">Flyer week Nov 12 – Nov 19, 2026 · 18 stores · Weekend specials (Big Crazy 柏仁超市, New Empire 新帝國, 超市2000) Nov 13–Nov 19</div></div>
+  <button id="langBtn" type="button" style="padding:8px 14px;font-size:14px;border:1px solid #bbb;border-radius:8px;background:#fff;font-weight:600;white-space:nowrap"></button>
+</header>
 <div class="controls">
-  <button id="langBtn" type="button" style="padding:8px 12px;font-size:14px;border:1px solid #bbb;border-radius:8px;background:#fff;font-weight:600"></button>
   <span id="storeWrap" style="position:relative;display:inline-block">
     <button id="storeBtn" type="button">Stores 商店: 全部</button>
     <div id="storePanel" hidden></div>
@@ -98,7 +100,7 @@ catSel.value='ALL';curCat='ALL';
 catSel.onchange=()=>{searchEl.value='';curCat=catSel.value||null;curItem=null;resultEl.innerHTML='';renderItems();};
 function applyLang(){langBtn.textContent=LANG==='EN'?'中文':'English';localStorage.setItem('lang',LANG);buildCats();renderItems();if(curItem)pick(curItem);}
 langBtn.onclick=()=>{LANG=LANG==='EN'?'ZH':'EN';applyLang();};
-applyLang();
+langBtn.textContent=LANG==='EN'?'中文':'English';
 function fmt(v,u){if(v==null)return '—';let s='$'+v.toFixed(2);if(u==='/lb')s+='/lb';if(u==='case')s+=' case';return s;}
 function ents(d,s){const x=d.stores[s];if(!x)return [];return Array.isArray(x)?x:[x];}
 function entryHtml(e){let extra='';
@@ -177,6 +179,7 @@ storeBtn.onclick=e=>{e.stopPropagation();storePanel.hidden=!storePanel.hidden;};
 storePanel.onclick=e=>{e.stopPropagation();const row=e.target.closest('.srow');if(row)applyStoreChange(row.dataset.v);};
 document.addEventListener('click',()=>{storePanel.hidden=true;});
 renderStoreOptions();
+applyLang();
 searchEl.oninput=()=>{
   if(searchEl.value.trim()&&catSel.value!=='ALL'){catSel.value='ALL';curCat='ALL';}
   renderItems();
