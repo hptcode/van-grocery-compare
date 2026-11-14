@@ -128,7 +128,7 @@ function pick(d){
     return '<tr'+cls+'><td><b>'+s+'</b>'+alt+'</td>'+storeRow(d,s)+'</tr>';}).join('');
   const dzh=d.name_zh?' <span class="zh">'+d.name_zh+'</span>':'';
   resultEl.innerHTML='<table><tr><th>Store 商店</th><th>Price 價格</th></tr>'+rows+'</table>'+
-   '<div class="note" style="margin-top:8px">Showing: <b>'+itemNameOf(d)+'</b>+
+   '<div class="note" style="margin-top:8px">Showing: <b>'+itemNameOf(d)+'</b>'+
    (bestStoreName!=null?' · best price at '+bestStoreName+' ('+bestGroup+')':'')+
    '. Items matched by name — check units before comparing /lb vs each. Prices converted to per-unit where multi-buy.</div>';
   // Mobile: bring the price table into view so users see the prices, not just the title bar
