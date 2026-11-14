@@ -107,7 +107,7 @@ function entryHtml(e){let extra='';
   if(e.member_price!=null)extra+='<span class="badge">Member $'+e.member_price.toFixed(2)+'</span>';
   if(e.regular_price!=null)extra+='<span class="note">reg '+fmt(e.regular_price,e.unit)+'</span>';
   return '<div class="price">'+fmt(e.price,e.unit)+'</div><div class="note">'+(e.unit==='ea'?'each':e.unit)+extra+
-    (e.name?'<br>'+entryNameOf(e)+(LANG==='ZH'&&entryNameOf(e)!==e.name?' <span style="opacity:.7">'+e.name+'</span>':''):'')+(e.note?'<br>'+e.note:'')+'</div>';}
+    (e.name?'<br>'+entryNameOf(e):'')+(e.note?'<br>'+e.note:'')+'</div>';}
 function storeRow(d,s){const es=ents(d,s);if(!es.length)return '<td>—</td>';
   const tag=es.length>1?'<div class="note">'+es.length+' sizes</div>':'';
   return '<td>'+tag+es.map(entryHtml).join('<hr style="border:0;border-top:1px solid #eee;margin:4px 0">')+'</td>';}
@@ -124,11 +124,11 @@ function pick(d){
   let rows=act.map((s)=>{const es=ents(d,s);
     const isBest=es.some(e=>e.price!=null&&bestStoreName===s&&(e.unit==='/lb'?'/lb':'ea')===bestGroup);
     const cls=isBest?' class="best"':'';
-    const alt=(LANG==='ZH'&&es.length&&es[0].name_zh)?' <span class="note">'+es[0].name+'</span>':(es.length&&es[0].name_zh?' <span class="zh"> '+es[0].name_zh+'</span>':(es.length&&es[0].name_ko?' <span class="note">('+es[0].name_ko+')</span>':''));
+    const alt='';
     return '<tr'+cls+'><td><b>'+s+'</b>'+alt+'</td>'+storeRow(d,s)+'</tr>';}).join('');
   const dzh=d.name_zh?' <span class="zh">'+d.name_zh+'</span>':'';
   resultEl.innerHTML='<table><tr><th>Store 商店</th><th>Price 價格</th></tr>'+rows+'</table>'+
-   '<div class="note" style="margin-top:8px">Showing: <b>'+itemNameOf(d)+'</b>'+(itemNameOf(d)!==d.name?' <span>'+d.name+'</span>':dzh)+
+   '<div class="note" style="margin-top:8px">Showing: <b>'+itemNameOf(d)+'</b>+
    (bestStoreName!=null?' · best price at '+bestStoreName+' ('+bestGroup+')':'')+
    '. Items matched by name — check units before comparing /lb vs each. Prices converted to per-unit where multi-buy.</div>';
   // Mobile: bring the price table into view so users see the prices, not just the title bar
@@ -148,9 +148,7 @@ function renderItems(){
     const b=document.createElement('button');
     const ns=act.filter(s=>ents(d,s).length).length;
     const catTag=(curCat==='ALL'||q)?'<span class="stores">'+catLabel(d.category)+'</span>':'';
-    const nm=itemNameOf(d);
-    const sec=(LANG==='ZH'&&nm!==d.name)?' <span class="note" style="font-weight:400">'+d.name+'</span>':((LANG==='EN'&&d.name_zh)?' <span class="zh">'+d.name_zh+'</span>':'');
-    b.innerHTML='<span>'+nm+sec+'</span>'+catTag+'<span class="stores">'+ns+' store'+(ns>1?'s':'')+'</span>';
+    b.innerHTML='<span>'+itemNameOf(d)+'</span>'+catTag+'<span class="stores">'+ns+' store'+(ns>1?'s':'')+'</span>';
     if(curItem===d)b.classList.add('active');
     b.onclick=()=>pick(d);itemsEl.appendChild(b);});
 }
