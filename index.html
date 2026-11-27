@@ -18,6 +18,10 @@ header .sub{font-size:12px;opacity:.85;margin-top:2px}
 .wrap{padding:12px 20px;max-width:1400px;margin:0 auto}
 #items{display:flex;flex-direction:column;gap:6px;max-height:72vh;overflow-y:auto;border:1px solid #eee;border-radius:10px;background:#fff;padding-right:2px}
 #langBtn{padding:10px 18px;font-size:16px;border:1px solid #bbb;border-radius:8px;background:#fff;font-weight:600;white-space:nowrap}
+#langPanel{position:absolute;top:110%;right:0;z-index:70;background:#fff;border:1px solid #ccc;border-radius:8px;box-shadow:0 4px 14px rgba(0,0,0,.18);padding:4px;display:flex;flex-direction:column;min-width:60px}
+.langopt{padding:10px 18px;font-size:16px;cursor:pointer;text-align:center;user-select:none;border-radius:6px;font-weight:600;color:#222}
+.langopt:hover{background:#eef7f2}
+.langopt.on{background:#00693e;color:#fff}
 @media (max-width:760px){
   .controls{flex-direction:column;align-items:stretch;padding:8px 12px;gap:8px}
   #catSel{width:100%;min-width:0}
@@ -62,7 +66,14 @@ footer{padding:10px 20px;font-size:12px;color:#888}
 <header style="display:flex;align-items:center;justify-content:space-between;gap:12px">
   <div><h1>🛒 Flyer價到</h1>
   <div class="sub">Flyer week Nov 26–Dec 02</div></div>
-  <button id="langBtn" type="button"></button>
+  <span id="langWrap" style="position:relative;display:inline-block">
+    <button id="langBtn" type="button"></button>
+    <span id="langPanel" hidden>
+      <span class="langopt" data-v="ZH">繁</span>
+      <span class="langopt" data-v="ZHS">简</span>
+      <span class="langopt" data-v="EN">EN</span>
+    </span>
+  </span>
 </header>
 <div class="controls">
   <span id="storeWrap" style="position:relative;display:inline-block">
@@ -120,9 +131,16 @@ function buildCats(){catSel.innerHTML='';
 buildCats();
 catSel.value='ALL';curCat='ALL';
 catSel.onchange=()=>{searchEl.value='';curCat=catSel.value||null;curItem=null;resultEl.innerHTML='';renderItems();};
-function applyLang(){langBtn.textContent=LANG==='EN'?'繁':(LANG==='ZH'?'简':'EN');localStorage.setItem('lang',LANG);buildCats();renderItems();if(curItem)pick(curItem);}
-langBtn.onclick=()=>{LANG=LANG==='EN'?'ZH':(LANG==='ZH'?'ZHS':'EN');applyLang();};
-langBtn.textContent=LANG==='EN'?'繁':(LANG==='ZH'?'简':'EN');
+function applyLang(){langBtn.textContent=LANG==='EN'?'EN':(LANG==='ZH'?'繁':'简');localStorage.setItem('lang',LANG);buildCats();renderItems();if(curItem)pick(curItem);}
+// Patrick 2026-11-27: language picker is a hover menu (繁/简/EN) — direct
+// selection instead of click-cycling. Button shows the CURRENT language.
+const langWrap=document.getElementById('langWrap'),langPanel=document.getElementById('langPanel');
+function renderLangOpts(){langPanel.querySelectorAll('.langopt').forEach(o=>o.classList.toggle('on',o.dataset.v===LANG));}
+langBtn.onclick=e=>{e.stopPropagation();langPanel.hidden=!langPanel.hidden;renderLangOpts();};
+langWrap.onmouseenter=()=>{langPanel.hidden=false;renderLangOpts();};
+langWrap.onmouseleave=()=>{langPanel.hidden=true;};
+langPanel.onclick=e=>{e.stopPropagation();const o=e.target.closest('.langopt');if(!o)return;LANG=o.dataset.v;langPanel.hidden=true;applyLang();};
+document.addEventListener('click',()=>{langPanel.hidden=true;});
 function fmt(v,u){if(v==null)return '—';let s='$'+v.toFixed(2);if(u==='/lb')s+='/lb';if(u==='case')s+=' case';return s;}
 function ents(d,s){const x=d.stores[s];if(!x)return [];return Array.isArray(x)?x:[x];}
 function entryHtml(e){let extra='';
