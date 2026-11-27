@@ -126,7 +126,7 @@ function buildCats(){catSel.innerHTML='';
 buildCats();
 catSel.value='ALL';curCat='ALL';
 catSel.onchange=()=>{searchEl.value='';curCat=catSel.value||null;curItem=null;resultEl.innerHTML='';renderItems();};
-function applyLang(){localStorage.setItem('lang',LANG);buildCats();renderLangOpts();renderItems();if(curItem)pick(curItem);}
+function applyLang(){localStorage.setItem('lang',LANG);buildCats();renderLangOpts();renderItems();if(curItem)pick(curItem,false);}
 // Patrick 2026-11-27 (rev): three ALWAYS-VISIBLE language clickables 繁/简/EN;
 // the active one is highlighted green — no separate current-language button,
 // no hover panel.
@@ -142,8 +142,11 @@ function entryHtml(e){let extra='';
 function storeRow(d,s){const es=ents(d,s);if(!es.length)return '<td>—</td>';
   const tag=es.length>1?'<div class="note">'+es.length+' sizes</div>':'';
   return '<td>'+tag+es.map(entryHtml).join('<hr style="border:0;border-top:1px solid #eee;margin:4px 0">')+'</td>';}
-function pick(d){
+function pick(d,push=true){
   curItem=d;renderItems();
+  // Patrick 2026-11-27: each opened group pushes a history entry so the
+  // browser's Back button closes the detail view instead of leaving the site.
+  if(push){try{history.pushState({g:DATA.indexOf(d)},'');}catch(e){}}
   const act=selectedStores();
   const all=act.flatMap(s=>ents(d,s).map(e=>({s,e})));
   const groups={};all.forEach(o=>{if(o.e.price==null)return;const u=o.e.unit==='/lb'?'/lb':'ea';
@@ -165,6 +168,11 @@ function pick(d){
   // Mobile: bring the price table into view so users see the prices, not just the title bar
   if(window.matchMedia('(max-width:760px)').matches) resultEl.scrollIntoView({behavior:'smooth',block:'start'});
 }
+// Patrick 2026-11-27: Back closes the detail view (or restores the previously
+// opened one) and returns to the list/top instead of leaving the site.
+window.addEventListener('popstate',e=>{const st=e.state;
+  if(st&&st.g!=null&&DATA[st.g]){curItem=DATA[st.g];pick(curItem,false);}
+  else{curItem=null;resultEl.innerHTML='';renderItems();window.scrollTo({top:0,behavior:'smooth'});}});
 function renderItems(){
   const q=searchEl.value.trim().toLowerCase();
   // 'ALL' shows everything; when searching with text, also search across all categories
@@ -202,7 +210,7 @@ function applyStoreChange(v){
     if(selStores.has(v))selStores.delete(v);else selStores.add(v);
     if(selStores.size===0)selStores=new Set(STORES);
   }
-  renderStoreOptions();renderItems();if(curItem)pick(curItem);
+  renderStoreOptions();renderItems();if(curItem)pick(curItem,false);
 }
 storeBtn.onclick=e=>{e.stopPropagation();storePanel.hidden=!storePanel.hidden;};
 storePanel.onclick=e=>{e.stopPropagation();const row=e.target.closest('.srow');if(row)applyStoreChange(row.dataset.v);};
