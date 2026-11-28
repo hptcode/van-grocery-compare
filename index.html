@@ -162,8 +162,7 @@ function pick(d,push=true){
     return '<tr'+cls+'><td><b>'+s+'</b>'+alt+'</td>'+storeRow(d,s)+'</tr>';}).join('');
   const dzh=d.name_zh?' <span class="zh">'+d.name_zh+'</span>':'';
   resultEl.innerHTML='<table><tr><th>Store 商店</th><th>Price 價格</th></tr>'+rows+'</table>'+
-   '<div class="note" style="margin-top:8px">Showing: <b>'+labelOf(d,act)+'</b>'+
-   '. Items matched by name — check units before comparing /lb vs each. Prices converted to per-unit where multi-buy.</div>';
+   '<div class="note" style="margin-top:8px">Check units before comparing /lb vs each. Prices converted to per-unit where multi-buy.</div>';
   // Mobile: bring the price table into view so users see the prices, not just the title bar
   if(window.matchMedia('(max-width:760px)').matches) resultEl.scrollIntoView({behavior:'smooth',block:'start'});
 }
