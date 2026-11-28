@@ -18,7 +18,8 @@ header .sub{font-size:12px;opacity:.85;margin-top:2px}
 #items{display:flex;flex-direction:column;gap:6px;max-height:72vh;overflow-y:auto;border:1px solid #e2cf96;border-radius:10px;background:#fff;padding-right:2px}
 #itemsWrap{position:relative}
 #itemsWrap.more::after{content:'';position:absolute;left:1px;right:1px;bottom:1px;height:30px;background:linear-gradient(to bottom,rgba(255,255,255,0),rgba(255,255,255,.95) 70%);pointer-events:none;border-radius:0 0 10px 10px}
-#itemsWrap.more::before{content:'▾';position:absolute;left:50%;transform:translateX(-50%);bottom:2px;z-index:2;color:#8a6d1a;font-size:16px;line-height:1;pointer-events:none;text-shadow:0 0 3px #fff}
+#itemsMore{position:absolute;left:50%;transform:translateX(-50%);bottom:6px;z-index:2;display:none;background:#fdf3d0;border:1px solid #d9c58a;color:#6b5410;font-size:12px;font-weight:600;line-height:1;padding:5px 12px;border-radius:999px;pointer-events:none;box-shadow:0 1px 4px rgba(0,0,0,.12);white-space:nowrap}
+#itemsWrap.more #itemsMore{display:block}
 #items::-webkit-scrollbar{width:6px}
 #items::-webkit-scrollbar-thumb{background:#d9c58a;border-radius:3px}
 #items::-webkit-scrollbar-track{background:transparent}
@@ -89,7 +90,7 @@ footer{padding:10px 20px;font-size:12px;color:#888}
 <main style="display:flex;gap:16px;width:100%">
 <div id="left" style="width:34%;min-width:280px">
   <h3 style="font-size:13px;margin:4px 0 6px;color:#555">Items 貨品 <span id="cnt" class="note"></span></h3>
-  <div id="itemsWrap"><div id="items"></div></div>
+  <div id="itemsWrap"><div id="items"></div><div id="itemsMore"></div></div>
   <div id="empty">Pick a category and an item to compare prices.</div>
 </div>
 <div id="right" style="flex:1;min-width:0">
@@ -197,10 +198,18 @@ function renderItems(){
     b.onclick=()=>pick(d);itemsEl.appendChild(b);});
   updItemsFade();
 }
+let _fadeRaf=0;
 function updItemsFade(){
-  const more=itemsEl.scrollHeight>itemsEl.clientHeight+6&&itemsEl.scrollTop+itemsEl.clientHeight<itemsEl.scrollHeight-6;
-  const w=document.getElementById('itemsWrap');
-  if(w)w.classList.toggle('more',more);
+  if(_fadeRaf)return;_fadeRaf=requestAnimationFrame(()=>{
+    _fadeRaf=0;
+    const bottom=itemsEl.scrollTop+itemsEl.clientHeight;
+    const hidden=Array.from(itemsEl.children).filter(b=>b.offsetTop+b.offsetHeight>bottom+4).length;
+    const more=itemsEl.scrollHeight>itemsEl.clientHeight+6&&hidden>0;
+    const w=document.getElementById('itemsWrap');
+    if(w)w.classList.toggle('more',more);
+    const chip=document.getElementById('itemsMore');
+    if(chip)chip.textContent='▼ '+'還有 '+hidden+' 項 · '+hidden+' more';
+  });
 }
 itemsEl.addEventListener('scroll',updItemsFade,{passive:true});
 window.addEventListener('resize',updItemsFade);
