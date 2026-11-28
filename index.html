@@ -187,6 +187,8 @@ function renderItems(){
   const list=DATA.filter(d=>(curCat==='ALL'||!curCat||d.category===curCat)&&
     (!q||(d.name.toLowerCase().includes(q)||(d.name_zh||'').includes(q)||(d.search||'').includes(q)))&&
     act.some(s=>ents(d,s).length));
+  if(act.length===1)list.sort((a,b)=>{const ia=CAT_ORDER.indexOf(a.category),ib=CAT_ORDER.indexOf(b.category);
+    return (ia<0?999:ia)-(ib<0?999:ib)||a.name.localeCompare(b.name);});
   itemsEl.innerHTML='';
   emptyEl.style.display=list.length?'none':'block';
   cntEl.textContent='('+list.length+(q?' · search':'')+')';
