@@ -49,6 +49,8 @@ header .sub{font-size:12px;opacity:.85;margin-top:2px}
 #items button{border:0;background:none;text-align:left;padding:9px 12px;cursor:pointer;border-bottom:1px solid #f1e6c2;font-size:14px;display:flex;justify-content:space-between;gap:8px}
 #items button:hover{background:#f2f8f4}
 #items button.active{background:#e3efe8;font-weight:600}
+#items button>span:first-child{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#items button .catcol{width:104px;flex-shrink:0;text-align:right;color:#888;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:6px}
 #items button .pricetag{font-weight:700;color:#0b7a45;white-space:nowrap;font-size:13px}
 #items .stores{color:#888;font-size:12px;white-space:nowrap}
 #result{margin-top:14px}
@@ -195,7 +197,7 @@ function renderItems(){
   list.forEach(d=>{
     const b=document.createElement('button');
     const ns=act.filter(s=>ents(d,s).length).length;
-    const catTag=(curCat==='ALL'||q)?'<span class="stores">'+catLabel(d.category)+'</span>':'';
+    const catTag=(curCat==='ALL'||q)?'<span class="catcol">'+catLabel(d.category)+'</span>':'';
     let right;
     if(act.length===1){
       const es=ents(d,act[0]);
